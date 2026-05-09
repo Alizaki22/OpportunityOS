@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 95%;
+
+        --card: 240 6% 6%;
+        --card-foreground: 0 0% 95%;
+
+        --popover: 240 6% 6%;
+        --popover-foreground: 0 0% 95%;
+
+        --primary: 258 90% 66%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 240 5% 12%;
+        --secondary-foreground: 0 0% 90%;
+
+        --muted: 240 4% 16%;
+        --muted-foreground: 240 5% 55%;
+
+        --accent: 199 89% 48%;
+        --accent-foreground: 0 0% 100%;
+
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 240 4% 16%;
+        --input: 240 4% 16%;
+        --ring: 258 90% 66%;
+
+        --radius: 0.75rem;
+
+        --sidebar-background: 240 8% 5%;
+        --sidebar-foreground: 240 5% 65%;
+        --sidebar-primary: 258 90% 66%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 240 5% 10%;
+        --sidebar-accent-foreground: 0 0% 90%;
+        --sidebar-border: 240 4% 12%;
+        --sidebar-ring: 258 90% 66%;
+
+        /* Custom tokens */
+        --glow-primary: 258 90% 66%;
+        --glow-accent: 199 89% 48%;
+        --success: 142 71% 45%;
+        --warning: 38 92% 50%;
+        --info: 199 89% 48%;
+
+        --gradient-primary: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(199 89% 48%) 100%);
+        --gradient-hero: linear-gradient(160deg, hsl(240 10% 3.9%) 0%, hsl(258 40% 10%) 50%, hsl(240 10% 3.9%) 100%);
+    }
