@@ -95,11 +95,11 @@ export default function AiAssistant() {
           }
         }
       })
-      .catch(() => {
+      .catch((error) => {
         addChatMessage({
           id: `msg-${Date.now() + 1}`,
           role: 'assistant',
-          content: "I'm having trouble connecting right now. Please try again in a moment! 🙏",
+          content: `I'm having a moment: ${error.message || 'Unknown error'}. Please try again! 🙏`,
           timestamp: new Date().toISOString(),
         });
         setIsTyping(false);

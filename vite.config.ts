@@ -13,6 +13,11 @@ export default defineConfig({
         target: 'https://api.groq.com/openai/v1',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/groq/, ''),
+      },
+      '/api/elevenlabs': {
+        target: 'https://api.elevenlabs.io/v1',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/elevenlabs/, ''),
       }
     }
   },

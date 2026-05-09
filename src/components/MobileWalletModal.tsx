@@ -149,33 +149,65 @@ export default function MobileWalletModal({ isOpen, onClose }: MobileWalletModal
                     <p className="text-sm text-muted-foreground mt-1">Choose your Solana mobile wallet</p>
                   </div>
 
-                  {/* Phantom Deep Link (Mobile) */}
+                  {/* Mobile Wallets */}
                   <div className="lg:hidden">
                     <p className="text-xs text-muted-foreground mb-3 font-medium uppercase tracking-wider flex items-center gap-1.5">
                       <Smartphone className="w-3.5 h-3.5" /> Mobile Wallets
                     </p>
                     <div className="space-y-2">
-                      {walletOptions.map(wallet => (
+                      {wallets.map((wallet) => (
                         <button
-                          key={wallet.name}
-                          onClick={wallet.name === 'Phantom' ? handlePhantomDeepLink : undefined}
+                          key={wallet.adapter.name}
+                          onClick={() => {
+                            const isPhantom = wallet.adapter.name === 'Phantom';
+                            const isAndroid = /Android/i.test(navigator.userAgent);
+                            const dappUrl = encodeURIComponent(window.location.origin);
+                            const redirectLink = encodeURIComponent(`${window.location.origin}/dashboard`);
+
+                            if (wallet.readyState === 'Installed') {
+                              wallet.adapter.connect().catch(() => {
+                                toast({ title: 'Connection Failed', description: 'Failed to connect to wallet.', variant: 'destructive' });
+                              });
+                            } else {
+                              if (isPhantom && isAndroid) {
+                                // Use strict Android Intent to force opening the installed app, avoiding download page redirect
+                                const intentUrl = `intent://v1/connect?app_url=${dappUrl}&redirect_link=${redirectLink}&cluster=devnet#Intent;scheme=phantom;package=app.phantom;end;`;
+                                window.location.href = intentUrl;
+                                
+                                // Fallback timeout if app is truly not installed
+                                setTimeout(() => {
+                                  toast({ title: 'Phantom not found', description: 'Please install Phantom wallet.', variant: 'destructive' });
+                                }, 2500);
+                              } else {
+                                // Default deep link or adapter connect for iOS/others
+                                wallet.adapter.connect().catch(() => {
+                                  if (isPhantom) {
+                                    window.location.href = `https://phantom.app/ul/v1/connect?app_url=${dappUrl}&redirect_link=${redirectLink}&cluster=devnet`;
+                                  }
+                                });
+                              }
+                            }
+                            onClose();
+                          }}
                           className="w-full flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:border-primary/30 hover:bg-secondary/30 transition-all touch-active"
                         >
-                          <span className="text-2xl">{wallet.icon}</span>
+                          <img src={wallet.adapter.icon} alt={wallet.adapter.name} className="w-8 h-8 rounded-lg" />
                           <div className="flex-1 text-left">
-                            <p className="font-semibold text-sm text-foreground">{wallet.name}</p>
-                            <p className="text-xs text-muted-foreground">{wallet.description}</p>
+                            <p className="font-semibold text-sm text-foreground">{wallet.adapter.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {wallet.readyState === 'Installed' ? 'Detected' : 'Connect via app'}
+                            </p>
                           </div>
-                          {wallet.available && (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/10 text-success font-semibold">Available</span>
+                          {wallet.readyState === 'Installed' && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/10 text-success font-semibold">Installed</span>
                           )}
                         </button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Standard Wallet Adapter (Desktop / Fallback) */}
-                  <div className="space-y-3">
+                  {/* Standard Wallet Adapter (Desktop) */}
+                  <div className="space-y-3 hidden lg:block">
                     {connecting && (
                       <div className="flex items-center justify-center gap-3 py-4">
                         <Loader2 className="w-5 h-5 animate-spin text-primary" />
