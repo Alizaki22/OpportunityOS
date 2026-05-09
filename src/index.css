@@ -5,54 +5,345 @@
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 95%;
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 95%;
 
-        --card: 240 6% 6%;
-        --card-foreground: 0 0% 95%;
+    --card: 240 6% 6%;
+    --card-foreground: 0 0% 95%;
 
-        --popover: 240 6% 6%;
-        --popover-foreground: 0 0% 95%;
+    --popover: 240 6% 6%;
+    --popover-foreground: 0 0% 95%;
 
-        --primary: 258 90% 66%;
-        --primary-foreground: 0 0% 100%;
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
 
-        --secondary: 240 5% 12%;
-        --secondary-foreground: 0 0% 90%;
+    --secondary: 240 5% 12%;
+    --secondary-foreground: 0 0% 90%;
 
-        --muted: 240 4% 16%;
-        --muted-foreground: 240 5% 55%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 55%;
 
-        --accent: 199 89% 48%;
-        --accent-foreground: 0 0% 100%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
 
-        --destructive: 0 72% 51%;
-        --destructive-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-        --border: 240 4% 16%;
-        --input: 240 4% 16%;
-        --ring: 258 90% 66%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 258 90% 66%;
 
-        --radius: 0.75rem;
+    --radius: 0.75rem;
 
-        --sidebar-background: 240 8% 5%;
-        --sidebar-foreground: 240 5% 65%;
-        --sidebar-primary: 258 90% 66%;
-        --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 240 5% 10%;
-        --sidebar-accent-foreground: 0 0% 90%;
-        --sidebar-border: 240 4% 12%;
-        --sidebar-ring: 258 90% 66%;
+    --sidebar-background: 240 8% 5%;
+    --sidebar-foreground: 240 5% 65%;
+    --sidebar-primary: 258 90% 66%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 5% 10%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 240 4% 12%;
+    --sidebar-ring: 258 90% 66%;
 
-        /* Custom tokens */
-        --glow-primary: 258 90% 66%;
-        --glow-accent: 199 89% 48%;
-        --success: 142 71% 45%;
-        --warning: 38 92% 50%;
-        --info: 199 89% 48%;
+    /* Custom tokens */
+    --glow-primary: 258 90% 66%;
+    --glow-accent: 199 89% 48%;
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+    --info: 199 89% 48%;
 
-        --gradient-primary: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(199 89% 48%) 100%);
-        --gradient-hero: linear-gradient(160deg, hsl(240 10% 3.9%) 0%, hsl(258 40% 10%) 50%, hsl(240 10% 3.9%) 100%);
-    }
+    --gradient-primary: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(199 89% 48%) 100%);
+    --gradient-hero: linear-gradient(160deg, hsl(240 10% 3.9%) 0%, hsl(258 40% 10%) 50%, hsl(240 10% 3.9%) 100%);
+    --gradient-neon: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(280 85% 60%) 50%, hsl(199 89% 48%) 100%);
+
+    /* Mobile safe areas */
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+
+    /* Bottom nav height */
+    --bottom-nav-height: 64px;
+  }
+}
+
+/* ============================================
+   MOBILE OVERSCROLL & SELECTION
+   ============================================ */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100dvh;
+}
+
+/* Remove default button tap highlight */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+@layer utilities {
+  /* Gradients */
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gradient-text-neon {
+    background: var(--gradient-neon);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Glassmorphism */
+  .glass {
+    background: rgba(9, 9, 15, 0.65);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+
+  .glass-strong {
+    background: rgba(9, 9, 15, 0.85);
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+  }
+
+  .glass-card {
+    background: rgba(18, 18, 28, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.3), 0 0 40px hsl(var(--accent) / 0.15);
+  }
+
+  .glow-neon {
+    box-shadow:
+      0 0 10px hsl(var(--primary) / 0.5),
+      0 0 30px hsl(var(--primary) / 0.25),
+      0 0 60px hsl(var(--primary) / 0.1);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.6);
+  }
+
+  /* Cards */
+  .card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px hsl(var(--primary) / 0.1);
+    border-color: hsl(var(--primary) / 0.3);
+  }
+  .card-hover:active {
+    transform: scale(0.98);
+  }
+
+  /* Touch feedback */
+  .touch-active {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .touch-active:active {
+    transform: scale(0.94);
+    opacity: 0.8;
+  }
+
+  /* Scrollbar hide */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe areas */
+  .safe-area-bottom {
+    padding-bottom: max(var(--safe-area-bottom), 8px);
+  }
+  .safe-area-top {
+    padding-top: var(--safe-area-top);
+  }
+
+  /* Page transition */
+  .page-enter {
+    animation: pageEnter 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  @keyframes pageEnter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Shimmer skeleton */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--secondary)) 25%,
+      hsl(var(--muted)) 50%,
+      hsl(var(--secondary)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Pulse ring animation */
+  .pulse-ring {
+    animation: pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+  }
+
+  @keyframes pulseRing {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 hsl(var(--primary) / 0.5); }
+    70% { transform: scale(1); box-shadow: 0 0 0 12px hsl(var(--primary) / 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+  }
+
+  /* Waveform animation for voice */
+  .waveform-bar {
+    animation: waveform 1.2s ease-in-out infinite;
+    transform-origin: bottom;
+  }
+
+  @keyframes waveform {
+    0%, 100% { transform: scaleY(0.3); }
+    50% { transform: scaleY(1); }
+  }
+
+  /* Floating animation */
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* Neon border */
+  .neon-border {
+    border: 1px solid hsl(var(--primary) / 0.4);
+    box-shadow:
+      inset 0 0 20px hsl(var(--primary) / 0.05),
+      0 0 20px hsl(var(--primary) / 0.1);
+  }
+
+  /* Success color utilities */
+  .text-success { color: hsl(var(--success)); }
+  .bg-success { background-color: hsl(var(--success)); }
+  .text-warning { color: hsl(var(--warning)); }
+  .bg-warning { background-color: hsl(var(--warning)); }
+  .text-info { color: hsl(var(--info)); }
+
+  /* Mobile typography optimization */
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Swipe card */
+  .swipe-card {
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Active dot indicator */
+  .dot-active {
+    animation: dotPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+}
+
+/* ============================================
+   MOBILE BOTTOM NAV SAFE AREA
+   ============================================ */
+.bottom-nav-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 8px);
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR (desktop only)
+   ============================================ */
+@media (min-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+/* ============================================
+   SOLANA WALLET ADAPTER OVERRIDES
+   ============================================ */
+.wallet-adapter-button {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius) !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  background: rgba(9, 9, 15, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* ============================================
+   SMOOTH SCROLL
+   ============================================ */
+* {
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   FOCUS VISIBLE
+   ============================================ */
+:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+::selection {
+  background: hsl(var(--primary) / 0.3);
+  color: hsl(var(--foreground));
 }

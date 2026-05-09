@@ -2,27 +2,56 @@
 <html lang="en" class="dark">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a0a0f" />
-    <script type="module">
-        import { Buffer } from 'https://esm.sh/buffer@6.0.3';
-        window.Buffer = Buffer;
-        window.global = window;
-        window.process = { env: {} };
-    </script>
-    <title>OpportunityOS — AI Career Operating System</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="OpportunityOS" />
+  <meta name="description" content="AI-powered Web3 career platform — scholarships, hackathons, jobs, and your on-chain student passport." />
+  <meta name="keywords" content="scholarships, hackathons, Web3, Solana, AI career, student opportunities" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="OpportunityOS — AI Career Operating System" />
+  <meta property="og:description" content="Your AI-native Web3 career super app. Find scholarships, hackathons, and jobs — verified on Solana." />
+  <meta property="og:type" content="website" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+  <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/icons/icon-96x96.png" />
+
+  <script type="module">
+    import { Buffer } from 'https://esm.sh/buffer@6.0.3';
+    window.Buffer = Buffer;
+    window.global = window;
+    window.process = { env: {} };
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(reg => {
+          console.log('[PWA] Service worker registered:', reg.scope);
+        }).catch(err => {
+          console.warn('[PWA] Service worker registration failed:', err);
+        });
+      });
+    }
+  </script>
+
+  <title>OpportunityOS — AI Career Operating System</title>
 </head>
 
 <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-
-
-
-
-
-
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>

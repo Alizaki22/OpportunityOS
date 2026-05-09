@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Wallet, Shield, Zap, Trophy, Star, Award, Globe, ExternalLink,
   Copy, CheckCircle2, GraduationCap, Code, Users, Sparkles, Lock,
+  Fingerprint, ChevronRight,
 } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { useApp } from '@/lib/context';
 import { mockBadges } from '@/lib/mockData';
 import {
-  mockPassportData,
-  mockNFTAchievements,
-  mockCredentials,
-  mockWalletTransactions,
+  mockPassportData, mockNFTAchievements, mockCredentials, mockWalletTransactions,
 } from '@/lib/web3MockData';
 import XpBar from '@/components/XpBar';
 import NFTAchievementCard from '@/components/NFTAchievementCard';
@@ -30,10 +28,7 @@ const fadeUp = {
 };
 
 const credTypeIcons: Record<string, React.ElementType> = {
-  education: GraduationCap,
-  skill: Zap,
-  participation: Code,
-  employment: Users,
+  education: GraduationCap, skill: Zap, participation: Code, employment: Users,
 };
 
 const credTypeColors: Record<string, string> = {
@@ -44,6 +39,13 @@ const credTypeColors: Record<string, string> = {
 };
 
 type TabType = 'overview' | 'nfts' | 'credentials' | 'activity';
+
+const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
+  { id: 'overview', label: 'Overview', icon: Shield },
+  { id: 'nfts', label: 'NFTs', icon: Award },
+  { id: 'credentials', label: 'Credentials', icon: CheckCircle2 },
+  { id: 'activity', label: 'Activity', icon: Zap },
+];
 
 export default function StudentPassport() {
   const { user } = useApp();
@@ -61,192 +63,294 @@ export default function StudentPassport() {
 
   if (!connected) {
     return (
-      <div className="p-4 sm:p-6 max-w-4xl mx-auto h-[calc(100vh-theme(spacing.24))] flex flex-col items-center justify-center text-center page-enter">
-        <div className="w-20 h-20 rounded-3xl bg-secondary/50 border border-border flex items-center justify-center mb-6">
-          <Shield className="w-10 h-10 text-muted-foreground" />
-        </div>
-        <h1 className="font-display text-3xl font-bold text-foreground mb-3">On-Chain Student Passport</h1>
-        <p className="text-muted-foreground max-w-md mx-auto mb-8">
-          Connect your Solana wallet to unlock your decentralized identity, view your verified achievements, and start building your immutable reputation.
-        </p>
-        <WalletMultiButton className="!bg-primary hover:!bg-primary/90 !transition-colors !rounded-xl !h-12 !px-8 !font-semibold !text-base shadow-lg shadow-primary/20" />
+      <div className="p-6 max-w-lg mx-auto h-[calc(100dvh-80px)] flex flex-col items-center justify-center text-center page-enter">
+        <motion.div
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 180, damping: 14 }}
+          className="w-24 h-24 rounded-3xl mb-6 flex items-center justify-center float"
+          style={{ background: 'var(--gradient-primary)' }}
+        >
+          <Fingerprint className="w-12 h-12 text-white" />
+        </motion.div>
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="font-display text-2xl font-bold text-foreground mb-3"
+        >
+          Your Web3 Passport
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-muted-foreground text-sm mb-8 max-w-sm"
+        >
+          Connect your Solana wallet to unlock your decentralized identity, view NFT achievements, and build your on-chain reputation.
+        </motion.p>
+
+        {/* Feature highlights */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="w-full space-y-2.5 mb-8"
+        >
+          {[
+            { icon: Shield, label: 'Verified on-chain credentials', color: 'text-primary' },
+            { icon: Award, label: 'NFT achievement badges', color: 'text-warning' },
+            { icon: Globe, label: 'Cross-chain identity', color: 'text-accent' },
+          ].map((f, i) => (
+            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/40 border border-border text-left">
+              <div className="w-8 h-8 rounded-lg bg-background flex items-center justify-center">
+                <f.icon className={`w-4 h-4 ${f.color}`} />
+              </div>
+              <p className="text-sm font-medium text-foreground">{f.label}</p>
+              <ChevronRight className="w-4 h-4 text-muted-foreground ml-auto" />
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+          <WalletMultiButton
+            style={{
+              background: 'var(--gradient-primary)',
+              borderRadius: '1rem',
+              fontSize: '0.9rem',
+              height: '52px',
+              padding: '0 36px',
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: 700,
+            }}
+          />
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 page-enter">
-      {/* Header Profile Section */}
-      <motion.div initial="hidden" animate="visible" custom={0} variants={fadeUp} className="relative rounded-2xl border border-border bg-card overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 opacity-50" />
-        <div className="relative p-6 sm:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
-          
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 w-full md:w-auto">
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-accent p-1">
-              <div className="w-full h-full rounded-xl bg-background flex items-center justify-center">
-                <Shield className="w-10 h-10 text-primary" />
+    <div className="pb-6 page-enter">
+      {/* Hero Header - full bleed gradient */}
+      <div className="relative overflow-hidden" style={{ background: 'var(--gradient-hero)' }}>
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-transparent to-transparent" />
+        <div className="relative p-5 sm:p-8 max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col sm:flex-row gap-5 items-start sm:items-center"
+          >
+            {/* Avatar */}
+            <div className="relative">
+              <div
+                className="w-20 h-20 rounded-2xl p-0.5 shrink-0"
+                style={{ background: 'var(--gradient-primary)' }}
+              >
+                <div className="w-full h-full rounded-[14px] bg-background flex items-center justify-center">
+                  <Shield className="w-9 h-9 text-primary" />
+                </div>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-success border-2 border-background flex items-center justify-center">
+                <CheckCircle2 className="w-3 h-3 text-success-foreground" />
               </div>
             </div>
-            <div className="text-center sm:text-left">
-              <div className="flex items-center gap-2 justify-center sm:justify-start mb-1">
-                <h1 className="font-display text-2xl font-bold text-foreground">Web3 Passport</h1>
+
+            {/* Identity */}
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h1 className="font-display text-xl font-bold text-foreground">
+                  {user?.name || 'Student Passport'}
+                </h1>
                 <Sparkles className="w-4 h-4 text-warning" />
               </div>
-              <p className="text-muted-foreground text-sm flex items-center justify-center sm:justify-start gap-2 mb-3">
-                {walletAddress.slice(0, 4)}...{walletAddress.slice(-4)}
-                <button onClick={handleCopy} className="hover:text-foreground transition-colors">
-                  {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
-                </button>
-              </p>
-              <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
-                  Global Rank #{mockPassportData.globalRank}
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-2 touch-active"
+              >
+                <span className="font-mono">{walletAddress.slice(0, 8)}...{walletAddress.slice(-6)}</span>
+                {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-primary/15 text-primary border border-primary/25">
+                  🏆 Global #{mockPassportData.globalRank}
                 </span>
-                <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-success/10 text-success border border-success/20">
-                  Reputation: {mockPassportData.reputationScore}
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-success/10 text-success border border-success/25">
+                  ⭐ Rep {mockPassportData.reputationScore}
+                </span>
+                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-accent/10 text-accent border border-accent/25">
+                  Lv.{user?.level || 1}
                 </span>
               </div>
             </div>
-          </div>
 
-          <div className="w-full md:w-64 space-y-2 bg-secondary/50 p-4 rounded-xl border border-border">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Passport Level</span>
-              <span className="font-bold text-foreground">{user?.level || 1}</span>
+            {/* XP mini bar */}
+            <div className="w-full sm:w-56 bg-secondary/50 border border-border rounded-xl p-3">
+              <div className="flex justify-between text-xs mb-2">
+                <span className="text-muted-foreground font-medium">Passport XP</span>
+                <span className="font-bold text-foreground">{mockPassportData.totalXp} / 3000</span>
+              </div>
+              <XpBar xp={mockPassportData.totalXp} level={user?.level || 1} size="sm" />
             </div>
-            <XpBar xp={mockPassportData.totalXp} level={user?.level || 1} size="sm" />
-            <div className="text-right text-xs text-muted-foreground">
-              {mockPassportData.totalXp} / 3000 XP
-            </div>
-          </div>
+          </motion.div>
+
+          {/* Quick stats row */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="grid grid-cols-3 gap-3 mt-5"
+          >
+            {[
+              { label: 'NFTs Earned', value: mockNFTAchievements.length, icon: Award, color: 'text-warning' },
+              { label: 'Credentials', value: mockCredentials.length, icon: CheckCircle2, color: 'text-success' },
+              { label: 'Transactions', value: mockWalletTransactions.length, icon: Zap, color: 'text-primary' },
+            ].map((stat, i) => (
+              <div key={i} className="glass-card rounded-xl p-3 text-center">
+                <stat.icon className={`w-5 h-5 ${stat.color} mx-auto mb-1`} />
+                <p className="font-display text-lg font-bold text-foreground">{stat.value}</p>
+                <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+              </div>
+            ))}
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide border-b border-border pb-px">
-        {(['overview', 'nfts', 'credentials', 'activity'] as const).map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-3 text-sm font-semibold capitalize whitespace-nowrap border-b-2 transition-all ${
-              activeTab === tab 
-                ? 'border-primary text-primary' 
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-            }`}
-          >
-            {tab === 'nfts' ? 'NFT Achievements' : tab}
-          </button>
-        ))}
+      <div className="sticky top-14 z-20 glass-strong border-b border-border">
+        <div className="flex overflow-x-auto scrollbar-hide max-w-5xl mx-auto px-4">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-4 py-3.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all touch-active ${
+                activeTab === tab.id
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+              }`}
+            >
+              <tab.icon className="w-3.5 h-3.5" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[400px]">
-        
-        {activeTab === 'overview' && (
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 space-y-6">
-              <motion.div initial="hidden" animate="visible" custom={1} variants={fadeUp}>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Milestones</h3>
-                <MilestoneTracker />
-              </motion.div>
-              
-              <motion.div initial="hidden" animate="visible" custom={2} variants={fadeUp}>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">Recent NFTs</h3>
-                  <button onClick={() => setActiveTab('nfts')} className="text-sm text-primary hover:underline">View All</button>
+      <div className="p-4 sm:p-6 max-w-5xl mx-auto">
+        <AnimatePresence mode="wait">
+          {activeTab === 'overview' && (
+            <motion.div
+              key="overview"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="grid md:grid-cols-3 gap-5"
+            >
+              <div className="md:col-span-2 space-y-5">
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-primary" /> Milestones
+                  </h3>
+                  <MilestoneTracker />
                 </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {mockNFTAchievements.slice(0, 2).map(nft => (
-                    <NFTAchievementCard key={nft.id} nft={nft} />
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-            
-            <div className="space-y-6">
-              <motion.div initial="hidden" animate="visible" custom={3} variants={fadeUp}>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Cross-Chain Identity</h3>
-                <CrossChainCard />
-              </motion.div>
-              
-              <motion.div initial="hidden" animate="visible" custom={4} variants={fadeUp} className="p-5 rounded-xl border border-border bg-card">
-                <h3 className="text-sm font-semibold text-foreground mb-4">Network Settings</h3>
-                <ChainSelector />
-              </motion.div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'nfts' && (
-          <motion.div initial="hidden" animate="visible" custom={1} variants={fadeUp} className="space-y-6">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockNFTAchievements.map(nft => (
-                <NFTAchievementCard key={nft.id} nft={nft} />
-              ))}
-              
-              {/* Mint Placeholder */}
-              <div className="border border-dashed border-border rounded-xl p-6 flex flex-col items-center justify-center text-center min-h-[300px] opacity-70 hover:opacity-100 hover:bg-secondary/30 transition-all cursor-pointer">
-                <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-3">
-                  <Lock className="w-5 h-5 text-muted-foreground" />
-                </div>
-                <p className="text-sm font-semibold text-foreground mb-1">More NFTs locked</p>
-                <p className="text-xs text-muted-foreground">Complete opportunities to earn more on-chain achievements.</p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {activeTab === 'credentials' && (
-          <motion.div initial="hidden" animate="visible" custom={1} variants={fadeUp} className="space-y-4">
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start gap-3 mb-6">
-              <Shield className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-semibold text-foreground">Verified Credentials</h4>
-                <p className="text-xs text-muted-foreground">These credentials have been cryptographically verified by the issuer and stored on the blockchain.</p>
-              </div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              {mockCredentials.map((cred) => {
-                const Icon = credTypeIcons[cred.type] || Award;
-                const colorClass = credTypeColors[cred.type] || 'bg-secondary text-foreground';
-                
-                return (
-                  <div key={cred.id} className="p-5 rounded-xl border border-border bg-card card-hover">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClass}`}>
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      {cred.verified && (
-                        <span className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold text-success bg-success/10 px-2 py-1 rounded-md">
-                          <CheckCircle2 className="w-3 h-3" /> Verified
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-semibold text-foreground leading-tight mb-1">{cred.title}</h3>
-                    <p className="text-xs text-muted-foreground mb-4">Issued by <span className="text-foreground font-medium">{cred.issuer}</span></p>
-                    
-                    <div className="pt-4 border-t border-border flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Issued: {cred.issuedAt}</span>
-                      {cred.txHash && (
-                        <a href="#" className="flex items-center gap-1 text-primary hover:underline">
-                          View Tx <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <Award className="w-4 h-4 text-warning" /> Recent NFTs
+                    </h3>
+                    <button onClick={() => setActiveTab('nfts')} className="text-xs text-primary hover:underline touch-active">View all →</button>
                   </div>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {mockNFTAchievements.slice(0, 2).map(nft => (
+                      <NFTAchievementCard key={nft.id} nft={nft} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-accent" /> Cross-Chain Identity
+                  </h3>
+                  <CrossChainCard />
+                </div>
+                <div className="p-4 rounded-xl border border-border bg-card">
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Network</h3>
+                  <ChainSelector />
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-        {activeTab === 'activity' && (
-          <motion.div initial="hidden" animate="visible" custom={1} variants={fadeUp} className="max-w-2xl">
-            <TransactionHistory transactions={mockWalletTransactions} />
-          </motion.div>
-        )}
+          {activeTab === 'nfts' && (
+            <motion.div key="nfts" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {mockNFTAchievements.map(nft => (
+                  <NFTAchievementCard key={nft.id} nft={nft} />
+                ))}
+                {/* Locked slot */}
+                <div className="border border-dashed border-border rounded-2xl p-8 flex flex-col items-center justify-center text-center opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+                  <Lock className="w-8 h-8 text-muted-foreground mb-3" />
+                  <p className="text-sm font-semibold text-foreground mb-1">More coming</p>
+                  <p className="text-xs text-muted-foreground">Complete opportunities to earn on-chain achievements</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
+          {activeTab === 'credentials' && (
+            <motion.div key="credentials" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 flex items-start gap-3">
+                <Shield className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground">Verified Credentials</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">Cryptographically verified and stored on-chain by issuers.</p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                {mockCredentials.map((cred) => {
+                  const Icon = credTypeIcons[cred.type] || Award;
+                  const colorClass = credTypeColors[cred.type] || 'bg-secondary text-foreground';
+                  return (
+                    <motion.div
+                      key={cred.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-5 rounded-2xl border border-border bg-card card-hover"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClass}`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        {cred.verified && (
+                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold text-success bg-success/10 px-2 py-1 rounded-lg">
+                            <CheckCircle2 className="w-3 h-3" /> Verified
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-foreground leading-tight mb-1">{cred.title}</h3>
+                      <p className="text-xs text-muted-foreground mb-4">Issued by <span className="text-foreground font-medium">{cred.issuer}</span></p>
+                      <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">{cred.issuedAt}</span>
+                        {cred.txHash && (
+                          <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+                            View Tx <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'activity' && (
+            <motion.div key="activity" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="max-w-2xl">
+              <TransactionHistory transactions={mockWalletTransactions} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

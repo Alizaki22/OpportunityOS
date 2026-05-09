@@ -3,7 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { Wallet, Copy, ExternalLink, LogOut, ChevronDown } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
-export default function WalletStatusBadge() {
+export default function WalletStatusBadge({ onClick }: { onClick?: () => void }) {
     const { publicKey, connected, disconnect } = useWallet();
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false);

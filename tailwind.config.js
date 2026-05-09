@@ -8,6 +8,14 @@ export default {
     ],
     prefix: "",
     theme: {
+        screens: {
+            'xs': '375px',
+            'sm': '640px',
+            'md': '768px',
+            'lg': '1024px',
+            'xl': '1280px',
+            '2xl': '1536px',
+        },
         container: {
             center: true,
             padding: '1rem',
@@ -16,6 +24,13 @@ export default {
             }
         },
         extend: {
+            spacing: {
+                'safe-top': 'env(safe-area-inset-top)',
+                'safe-bottom': 'env(safe-area-inset-bottom)',
+                'safe-left': 'env(safe-area-inset-left)',
+                'safe-right': 'env(safe-area-inset-right)',
+                '4.5': '1.125rem',
+            },
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
                 display: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],

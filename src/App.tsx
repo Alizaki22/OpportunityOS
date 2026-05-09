@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
@@ -7,6 +7,7 @@ import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
 import { AppProvider } from '@/lib/context';
+import { MobileToastProvider } from '@/components/MobileToast';
 
 import AppLayout from '@/components/AppLayout';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -38,32 +39,34 @@ const App = () => {
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
                     <AppProvider>
-                        <ErrorBoundary>
-                            <Routes>
-                                {/* Public routes */}
-                                <Route path="/" element={<Landing />} />
-                                <Route path="/onboarding" element={<Onboarding />} />
+                        <MobileToastProvider>
+                            <ErrorBoundary>
+                                <Routes>
+                                    {/* Public routes */}
+                                    <Route path="/" element={<Landing />} />
+                                    <Route path="/onboarding" element={<Onboarding />} />
 
-                                {/* App routes with sidebar layout */}
-                                <Route element={<AppLayout />}>
-                                    <Route path="/dashboard" element={<Dashboard />} />
-                                    <Route path="/opportunities" element={<Opportunities />} />
-                                    <Route path="/scholarships" element={<Scholarships />} />
-                                    <Route path="/jobs" element={<Jobs />} />
-                                    <Route path="/hackathons" element={<Hackathons />} />
-                                    <Route path="/saved" element={<Saved />} />
-                                    <Route path="/ai-assistant" element={<AiAssistant />} />
-                                    <Route path="/profile" element={<Profile />} />
-                                    <Route path="/leaderboard" element={<Leaderboard />} />
-                                    <Route path="/settings" element={<Settings />} />
-                                    <Route path="/admin" element={<Admin />} />
-                                    <Route path="/passport" element={<StudentPassport />} />
-                                </Route>
+                                    {/* App routes with layout */}
+                                    <Route element={<AppLayout />}>
+                                        <Route path="/dashboard" element={<Dashboard />} />
+                                        <Route path="/opportunities" element={<Opportunities />} />
+                                        <Route path="/scholarships" element={<Scholarships />} />
+                                        <Route path="/jobs" element={<Jobs />} />
+                                        <Route path="/hackathons" element={<Hackathons />} />
+                                        <Route path="/saved" element={<Saved />} />
+                                        <Route path="/ai-assistant" element={<AiAssistant />} />
+                                        <Route path="/profile" element={<Profile />} />
+                                        <Route path="/leaderboard" element={<Leaderboard />} />
+                                        <Route path="/settings" element={<Settings />} />
+                                        <Route path="/admin" element={<Admin />} />
+                                        <Route path="/passport" element={<StudentPassport />} />
+                                    </Route>
 
-                                <Route path="*" element={<NotFound />} />
-                            </Routes>
-                        </ErrorBoundary>
-                        <Toaster />
+                                    <Route path="*" element={<NotFound />} />
+                                </Routes>
+                            </ErrorBoundary>
+                            <Toaster />
+                        </MobileToastProvider>
                     </AppProvider>
                 </WalletModalProvider>
             </WalletProvider>

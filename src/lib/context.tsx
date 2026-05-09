@@ -28,8 +28,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AppState>({
-    user: null,
-    isAuthenticated: false,
+    user: mockUser,
+    isAuthenticated: true,
     opportunities: mockOpportunities,
     applications: mockApplications,
     savedOpportunities: ['1', '3', '7'],
