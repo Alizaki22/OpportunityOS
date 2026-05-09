@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Bot, Send, Sparkles, FileText, Target, GraduationCap, Loader2 } from 'lucide-react';
+import { Bot, Send, Sparkles, FileText, Target, GraduationCap, Loader2, Volume2, VolumeX } from 'lucide-react';
 import { useApp } from '@/lib/context';
+import { generateSpeech } from '@/lib/elevenlabs';
+import { generateAiResponse } from '@/lib/ai';
 import type { ChatMessage } from '@/lib/types';
 
 const suggestions = [
@@ -11,62 +13,13 @@ const suggestions = [
   { icon: Sparkles, label: 'Find opportunities', prompt: 'Suggest scholarships for international CS students in the USA' },
 ];
 
-const mockResponses: Record<string, string> = {
-  resume: `Here's how to strengthen your resume for tech internships:
-
-**1. Add a Technical Skills Section** — List languages (Python, JS, TypeScript), frameworks (React, Node.js), and tools (Git, Docker) prominently at the top.
-
-**2. Quantify Impact** — Instead of "Built a website", say "Built a React dashboard serving 5K+ users, reducing load time by 40%."
-
-**3. Projects > Coursework** — Feature 2-3 strong personal/hackathon projects with live links and GitHub repos.
-
-**4. Use STAR Format** — Situation, Task, Action, Result for each bullet point.
-
-**5. Add Relevant Certifications** — AWS, Google Cloud, or Coursera ML specializations add credibility.
-
-Would you like me to review a specific section?`,
-  sop: `Here's a draft SOP framework for a CS Masters at MIT:
-
-**Opening Hook:** Start with a compelling personal story about your first meaningful tech project or moment of discovery.
-
-**Academic Foundation:** Highlight your strongest coursework, research experience, and academic achievements. MIT values intellectual curiosity.
-
-**Research Interest:** Be specific — "I want to work on foundation models for code generation" is better than "I'm interested in AI."
-
-**Why MIT:** Reference specific labs (CSAIL, Media Lab), professors, and research groups aligned with your goals.
-
-**Future Vision:** Connect your MIT education to a concrete 5-10 year career plan.
-
-Shall I draft a complete SOP based on your profile?`,
-  roadmap: `**6-Month AI Engineer Roadmap:**
-
-**Month 1-2: Foundations**
-- Complete Andrew Ng's ML Specialization
-- Build 3 ML projects (classification, NLP, computer vision)
-- Learn PyTorch or TensorFlow deeply
-
-**Month 3-4: Specialization**
-- Deep dive into NLP or Computer Vision
-- Read 10 key research papers
-- Contribute to an open-source ML project
-- Build a full-stack AI application
-
-**Month 5-6: Portfolio & Applications**
-- Deploy 2 production-ready AI projects
-- Write technical blog posts
-- Apply for internships/junior roles
-
-Let me know if you want to adjust the timeline!`,
-  default: `I can certainly help you with that! As an AI career copilot, I can assist with finding opportunities, reviewing resumes, writing essays, or planning your career path based on your profile.
-
-Could you provide a few more details so I can give you a more personalized response?`
-};
 
 export default function AiAssistant() {
   const { chatMessages, addChatMessage } = useApp();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -89,28 +42,46 @@ export default function AiAssistant() {
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      let responseKey = 'default';
-      const lowercaseText = text.toLowerCase();
-      if (lowercaseText.includes('resume') || lowercaseText.includes('cv')) responseKey = 'resume';
-      else if (lowercaseText.includes('sop') || lowercaseText.includes('purpose') || lowercaseText.includes('essay')) responseKey = 'sop';
-      else if (lowercaseText.includes('roadmap') || lowercaseText.includes('plan')) responseKey = 'roadmap';
+    // Real AI response
+    generateAiResponse(text, chatMessages)
+      .then(async (aiResponse) => {
+        addChatMessage({
+          id: `msg-${Date.now() + 1}`,
+          role: 'assistant',
+          content: aiResponse,
+          timestamp: new Date().toISOString()
+        });
+        setIsTyping(false);
 
-      addChatMessage({
-        id: `msg-${Date.now() + 1}`,
-        role: 'assistant',
-        content: mockResponses[responseKey],
-        timestamp: new Date().toISOString()
+        // Real voice playback
+        if (voiceEnabled) {
+          console.log('[AiAssistant] AI response ready, starting voice generation...');
+          setIsGeneratingVoice(true);
+          generateSpeech(aiResponse)
+            .then(audio => {
+              console.log('[AiAssistant] Audio generated, playing now');
+              audio.play().catch(pErr => {
+                console.warn('[AiAssistant] Playback blocked by browser:', pErr);
+              });
+            })
+            .catch(err => {
+              console.error('[AiAssistant] Voice generation failed:', err);
+            })
+            .finally(() => {
+              setIsGeneratingVoice(false);
+            });
+        }
+      })
+      .catch(err => {
+        console.error('[AiAssistant] AI Request failed:', err);
+        addChatMessage({
+          id: `msg-${Date.now() + 1}`,
+          role: 'assistant',
+          content: "I'm sorry, I'm having trouble connecting to my brain right now. Please try again in a moment.",
+          timestamp: new Date().toISOString()
+        });
+        setIsTyping(false);
       });
-      setIsTyping(false);
-      
-      // Mock voice playback
-      if (voiceEnabled) {
-        // In a real implementation, this would call ElevenLabs API
-        console.log(`[ElevenLabs Mock] Playing voice for response: ${responseKey}`);
-      }
-    }, 1500);
   };
 
   return (
@@ -136,8 +107,14 @@ export default function AiAssistant() {
                 : 'bg-secondary text-muted-foreground border-border'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            Voice {voiceEnabled ? 'On' : 'Off'}
+            {isGeneratingVoice ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : voiceEnabled ? (
+              <Volume2 className="w-3.5 h-3.5" />
+            ) : (
+              <VolumeX className="w-3.5 h-3.5" />
+            )}
+            {isGeneratingVoice ? 'Generating...' : `Voice ${voiceEnabled ? 'On' : 'Off'}`}
           </button>
         </div>
       </div>

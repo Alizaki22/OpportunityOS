@@ -7,7 +7,14 @@ export default defineConfig({
         host: '0.0.0.0',
         port: 5173,
         allowedHosts: true,
-        watch: { usePolling: true }
+        watch: { usePolling: true },
+        proxy: {
+            '/api/groq': {
+                target: 'https://api.groq.com/openai/v1',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/groq/, ''),
+            }
+        }
     },
     plugins: [react()],
     resolve: {

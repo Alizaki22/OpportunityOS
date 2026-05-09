@@ -20,6 +20,8 @@ import {
 import type { Opportunity } from '@/lib/types';
 import { categoryConfig } from '@/lib/mockData';
 import { useApp } from '@/lib/context';
+import { generateSpeech } from '@/lib/elevenlabs';
+import { useToast } from '@/hooks/use-toast';
 
 const iconMap: Record<string, React.ElementType> = {
     GraduationCap, Briefcase, Building2, Code, Coins, Award, Trophy, Users, Rocket,
@@ -27,11 +29,32 @@ const iconMap: Record<string, React.ElementType> = {
 
 export default function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
     const { savedOpportunities, saveOpportunity, unsaveOpportunity, addApplication, applications } = useApp();
+    const { toast } = useToast();
     const isSaved = savedOpportunities.includes(opportunity.id);
     const isApplied = applications.some(a => a.opportunityId === opportunity.id);
     const [isPlaying, setIsPlaying] = React.useState(false);
     const config = categoryConfig[opportunity.category];
     const IconComp = iconMap[config?.icon] || Briefcase;
+
+    const handlePlaySummary = async () => {
+        if (isPlaying) return;
+        
+        setIsPlaying(true);
+        try {
+            const text = `${opportunity.title} by ${opportunity.organization}. ${opportunity.description}`;
+            const audio = await generateSpeech(text);
+            audio.onended = () => setIsPlaying(false);
+            await audio.play();
+        } catch (err) {
+            console.error('Voice generation failed:', err);
+            toast({
+                title: "Voice Generation Failed",
+                description: err instanceof Error ? err.message : "An unknown error occurred",
+                variant: "destructive"
+            });
+            setIsPlaying(false);
+        }
+    };
 
     return (
         <div className="group rounded-xl border border-border bg-card p-4 card-hover">
@@ -69,11 +92,8 @@ export default function OpportunityCard({ opportunity }: { opportunity: Opportun
                     {opportunity.title}
                 </h3>
                 <button 
-                    onClick={() => {
-                        setIsPlaying(true);
-                        setTimeout(() => setIsPlaying(false), 2000);
-                        console.log(`[ElevenLabs Mock] Playing summary for ${opportunity.id}`);
-                    }}
+                    onClick={handlePlaySummary}
+                    disabled={isPlaying}
                     className={`p-1.5 rounded-lg border transition-colors shrink-0 ${
                         isPlaying 
                             ? 'bg-primary/10 border-primary/20 text-primary' 

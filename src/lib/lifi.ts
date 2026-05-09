@@ -1,8 +1,18 @@
-import { createConfig, getRoutes, type RoutesRequest } from '@lifi/sdk';
+import { createConfig, getRoutes, type RoutesRequest, Solana } from '@lifi/sdk';
 
-// Initialize LI.FI Config
+// Initialize LI.FI Config with Solana support
 createConfig({
   integrator: 'OpportunityOS',
+  providers: [
+    Solana({
+      async getWalletClient() {
+        return (window as any).solana;
+      },
+      async getSwitchChainHook() {
+        return (async () => (window as any).solana) as any;
+      },
+    }),
+  ],
 });
 
 /**
@@ -28,22 +38,32 @@ export async function getLifiRoute(
       toTokenAddress: toToken,
       fromAmount: fromAmount,
       options: {
-        slippage: 0.03, // 3%
+        slippage: 0.03,
         order: 'RECOMMENDED',
       },
     };
 
+    console.log('Fetching LI.FI route with request:', request);
     const result = await getRoutes(request);
-    return result.routes[0]; // Return the best route
-  } catch (error) {
-    console.error('LI.FI route fetch failed:', error);
+    
+    if (!result.routes || result.routes.length === 0) {
+      throw new Error('No routes found for this token/chain combination.');
+    }
+
+    return result.routes[0];
+  } catch (error: any) {
+    console.error('LI.FI route fetch failed details:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
     throw error;
   }
 }
 
-// Chain IDs for reference
+// Chain IDs for reference (LI.FI standard)
 export const LIFI_CHAINS = {
-  SOLANA: 'sol',
+  SOLANA: '115111108109', // Solana Mainnet
   POLYGON: '137',
   ETHEREUM: '1',
   ARBITRUM: '42161',
