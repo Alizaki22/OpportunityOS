@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Sparkles, ArrowRight, Flame, Trophy, Target, Send,
-  Bookmark, Bot, TrendingUp, Zap, Clock, Shield, Award,
+  Bookmark, Bot, TrendingUp, Zap, Clock, Shield, Award, Wallet,
 } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useApp } from '@/lib/context';
@@ -135,9 +135,9 @@ export default function Dashboard() {
                 Rank #124
               </button>
             </div>
-            <XpBar currentXp={user?.xp || 0} nextLevelXp={3000} size="md" />
+            <XpBar xp={user?.xp || 0} level={user?.level || 1} size="md" />
             <p className="text-xs text-center text-muted-foreground mt-3">
-              550 XP needed for next level
+              {(user?.levelProgress || 0) < 100 ? `${3000 - (user?.xp || 0)} XP needed for next level` : 'Max level reached!'}
             </p>
           </motion.div>
 
@@ -169,7 +169,7 @@ export default function Dashboard() {
             </h3>
             <div className="flex flex-col gap-3">
               {mockNFTAchievements.slice(0, 1).map(nft => (
-                <NFTAchievementCard key={nft.id} achievement={nft} compact />
+                <NFTAchievementCard key={nft.id} nft={nft} compact />
               ))}
               {mockBadges.filter(b => b.earnedAt).slice(0, 2).map(badge => (
                 <BadgeCard key={badge.id} badge={badge} />

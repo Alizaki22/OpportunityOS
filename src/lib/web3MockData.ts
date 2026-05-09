@@ -130,3 +130,9 @@ export const mockChains: ChainInfo[] = [
   { id: 'ethereum', name: 'Ethereum', icon: 'eth-logo', balance: '0.12', symbol: 'ETH' },
   { id: 'polygon', name: 'Polygon', icon: 'polygon-logo', balance: '145.2', symbol: 'MATIC' },
 ];
+
+export const supportedChains = [
+  { id: 'solana', name: 'Solana', icon: 'S', color: '#14F195', status: 'active' },
+  { id: 'ethereum', name: 'Ethereum', icon: 'E', color: '#627EEA', status: 'coming_soon' },
+  { id: 'polygon', name: 'Polygon', icon: 'P', color: '#8247E5', status: 'coming_soon' },
+];

@@ -33,7 +33,9 @@ const categoryIcons: Record<string, string> = {
     education: '🎓',
 };
 
-export default function NFTAchievementCard({ nft }: { nft: NFTAchievement }) {
+export default function NFTAchievementCard({ nft, compact = false }: { nft: NFTAchievement, compact?: boolean }) {
+    if (!nft) return null;
+
     const { connected } = useWallet();
     const [minting, setMinting] = useState(false);
     const [minted, setMinted] = useState(!!nft.mintedAt);
@@ -41,17 +43,22 @@ export default function NFTAchievementCard({ nft }: { nft: NFTAchievement }) {
     const handleMint = async () => {
         if (!connected || minted) return;
         setMinting(true);
-        const result = await mockMintNFT(nft.id);
-        if (result.success) setMinted(true);
-        setMinting(false);
+        try {
+            const result = await mockMintNFT(nft.id);
+            if (result.success) setMinted(true);
+        } catch (error) {
+            console.error('Mint failed:', error);
+        } finally {
+            setMinting(false);
+        }
     };
 
     return (
-        <div className={`nft-card group ${rarityBorders[nft.rarity]}`}>
+        <div className={`nft-card group ${rarityBorders[nft.rarity]} ${compact ? 'flex items-center gap-3 p-2' : ''}`}>
             {/* Visual header */}
-            <div className={`h-32 relative bg-gradient-to-br ${rarityGradients[nft.rarity]} overflow-hidden`}>
+            <div className={`${compact ? 'w-16 h-16 rounded-lg' : 'h-32'} relative bg-gradient-to-br ${rarityGradients[nft.rarity]} overflow-hidden shrink-0`}>
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-5xl opacity-50 group-hover:opacity-80 transition-opacity group-hover:scale-110 transform duration-300">
+                    <span className={`${compact ? 'text-2xl' : 'text-5xl'} opacity-50 group-hover:opacity-80 transition-opacity group-hover:scale-110 transform duration-300`}>
                         {categoryIcons[nft.category]}
                     </span>
                 </div>
@@ -75,21 +82,23 @@ export default function NFTAchievementCard({ nft }: { nft: NFTAchievement }) {
             </div>
 
             {/* Content */}
-            <div className="p-3">
-                <h3 className="text-sm font-semibold text-foreground leading-tight mb-1">{nft.name}</h3>
-                <p className="text-[11px] text-muted-foreground line-clamp-2 mb-2">{nft.description}</p>
+            <div className={`${compact ? 'flex-1 py-1' : 'p-3'}`}>
+                <h3 className={`${compact ? 'text-xs' : 'text-sm'} font-semibold text-foreground leading-tight mb-1`}>{nft.name}</h3>
+                {!compact && <p className="text-[11px] text-muted-foreground line-clamp-2 mb-2">{nft.description}</p>}
 
                 {/* Attributes */}
-                <div className="flex flex-wrap gap-1 mb-3">
-                    {nft.attributes.slice(0, 2).map(attr => (
-                        <span key={attr.trait_type} className="text-[9px] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground">
-                            {attr.value}
+                {!compact && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                        {nft.attributes.slice(0, 2).map(attr => (
+                            <span key={attr.trait_type} className="text-[9px] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground">
+                                {attr.value}
+                            </span>
+                        ))}
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-semibold">
+                            +{nft.xpReward} XP
                         </span>
-                    ))}
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-semibold">
-                        +{nft.xpReward} XP
-                    </span>
-                </div>
+                    </div>
+                )}
 
                 {/* Action */}
                 {minted ? (
@@ -103,18 +112,18 @@ export default function NFTAchievementCard({ nft }: { nft: NFTAchievement }) {
                     <button
                         onClick={handleMint}
                         disabled={!connected || minting}
-                        className="w-full py-2 rounded-lg text-xs font-semibold text-primary-foreground disabled:opacity-50 transition-all"
+                        className={`${compact ? 'px-3 py-1' : 'w-full py-2'} rounded-lg text-xs font-semibold text-primary-foreground disabled:opacity-50 transition-all`}
                         style={{ background: 'var(--gradient-primary)' }}
                     >
                         {minting ? (
                             <span className="flex items-center justify-center gap-1.5">
                                 <Loader2 className="w-3 h-3 animate-spin" />
-                                Minting...
+                                {!compact && 'Minting...'}
                             </span>
                         ) : connected ? (
-                            'Mint NFT'
+                            'Mint'
                         ) : (
-                            'Connect Wallet'
+                            'Connect'
                         )}
                     </button>
                 )}

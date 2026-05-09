@@ -47,17 +47,17 @@ export default function Onboarding() {
     <div className="min-h-screen bg-background flex flex-col page-enter">
       {/* Progress Bar */}
       <div className="h-1.5 w-full bg-secondary/50">
-        <div 
+        <div
           className="h-full bg-primary transition-all duration-500 ease-out"
-          style={{ width: \`\${((step + 1) / steps.length) * 100}%\` }}
+          style={{ width: `${((step + 1) / steps.length) * 100}%` }}
         />
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 max-w-lg mx-auto w-full">
-        
+
         {/* Step Header */}
         <div className="w-full mb-8 text-center">
-          <motion.div 
+          <motion.div
             key={step}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -87,8 +87,8 @@ export default function Onboarding() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground">Full Name</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.name}
                     onChange={e => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Alex Rivera"
@@ -97,8 +97,8 @@ export default function Onboarding() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground">Email</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={formData.email}
                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                     placeholder="alex@university.edu"
@@ -112,7 +112,7 @@ export default function Onboarding() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground">Current Level</label>
-                  <select 
+                  <select
                     value={formData.educationLevel}
                     onChange={e => setFormData({ ...formData, educationLevel: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm text-foreground focus:outline-none focus:border-primary/50 transition-colors"
@@ -126,8 +126,8 @@ export default function Onboarding() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground">University / Institution</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.university}
                     onChange={e => setFormData({ ...formData, university: e.target.value })}
                     placeholder="e.g. MIT, NUS, Self-taught"
@@ -141,8 +141,8 @@ export default function Onboarding() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground">Primary Career Goal</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.careerGoals}
                     onChange={e => setFormData({ ...formData, careerGoals: e.target.value })}
                     placeholder="e.g. AI Engineer, Web3 Founder"
@@ -151,8 +151,8 @@ export default function Onboarding() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-foreground">Key Skills (comma separated)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.skills.join(', ')}
                     onChange={e => setFormData({ ...formData, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
                     placeholder="React, Python, Solidity"
@@ -180,7 +180,7 @@ export default function Onboarding() {
                         <span className="text-xs font-semibold text-primary">AI-Generated Profile Summary</span>
                       </div>
                       <p className="text-sm text-secondary-foreground/80 leading-relaxed">
-                        {formData.name || 'You'} {formData.educationLevel ? \`is a \${formData.educationLevel} student\` : 'is a student'} {formData.university ? \`at \${formData.university}\` : ''} with strong skills in {formData.skills.length ? formData.skills.slice(0, 3).join(', ') : 'technology'}. Passionate about {formData.interests.length ? formData.interests.slice(0, 2).join(' and ') : 'innovation'}, with aspirations in {formData.careerGoals || 'tech leadership'}. Recommended focus: AI-powered opportunities, competitive scholarships, and industry hackathons.
+                        {formData.name || 'You'} {formData.educationLevel ? `is a ${formData.educationLevel} student` : 'is a student'} {formData.university ? `at ${formData.university}` : ''} with strong skills in {formData.skills.length ? formData.skills.slice(0, 3).join(', ') : 'technology'}. Passionate about {formData.interests.length ? formData.interests.slice(0, 2).join(' and ') : 'innovation'}, with aspirations in {formData.careerGoals || 'tech leadership'}. Recommended focus: AI-powered opportunities, competitive scholarships, and industry hackathons.
                       </p>
                     </div>
                     <div className="p-4 rounded-xl border border-border bg-card text-left">

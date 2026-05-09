@@ -114,7 +114,7 @@ export default function StudentPassport() {
               <span className="text-muted-foreground">Passport Level</span>
               <span className="font-bold text-foreground">{user?.level || 1}</span>
             </div>
-            <XpBar currentXp={mockPassportData.totalXp} nextLevelXp={3000} size="sm" />
+            <XpBar xp={mockPassportData.totalXp} level={user?.level || 1} size="sm" />
             <div className="text-right text-xs text-muted-foreground">
               {mockPassportData.totalXp} / 3000 XP
             </div>
@@ -157,7 +157,7 @@ export default function StudentPassport() {
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {mockNFTAchievements.slice(0, 2).map(nft => (
-                    <NFTAchievementCard key={nft.id} achievement={nft} />
+                    <NFTAchievementCard key={nft.id} nft={nft} />
                   ))}
                 </div>
               </motion.div>
@@ -181,7 +181,7 @@ export default function StudentPassport() {
           <motion.div initial="hidden" animate="visible" custom={1} variants={fadeUp} className="space-y-6">
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {mockNFTAchievements.map(nft => (
-                <NFTAchievementCard key={nft.id} achievement={nft} />
+                <NFTAchievementCard key={nft.id} nft={nft} />
               ))}
               
               {/* Mint Placeholder */}

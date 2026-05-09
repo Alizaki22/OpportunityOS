@@ -155,3 +155,9 @@ export const mockLeaderboard: LeaderboardEntry[] = [
   { rank: 7, id: 'u7', name: 'Maria Garcia', avatar: 'MG', country: 'Spain', xp: 10950, badges: 12, level: 26 },
   { rank: 8, id: 'u8', name: 'Ahmed Hassan', avatar: 'AH', country: 'Egypt', xp: 9800, badges: 10, level: 24 },
 ];
+
+export const getLevelProgress = (xp: number, level: number) => {
+  // Simple calculation: 1000 XP per level
+  const xpInCurrentLevel = xp % 1000;
+  return (xpInCurrentLevel / 1000) * 100;
+};

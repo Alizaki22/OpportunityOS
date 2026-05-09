@@ -1,19 +1,63 @@
-import React from 'react';
-import { Wallet, Shield, Zap, ExternalLink, Copy } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import React, { useEffect, useState } from 'react';
+import { Wallet, Shield, Zap, ExternalLink, Copy, Send, Loader2 } from 'lucide-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { mockPassportData } from '@/lib/web3MockData';
-import { useState } from 'react';
+import { getSolBalance, sendTestTransaction } from '@/lib/solana';
+import { useToast } from '@/hooks/use-toast';
 
 export default function WalletProfileCard() {
-    const { publicKey, connected } = useWallet();
+    const { connection } = useConnection();
+    const { publicKey, connected, sendTransaction } = useWallet();
+    const { toast } = useToast();
+    
     const [copied, setCopied] = useState(false);
+    const [balance, setBalance] = useState<number | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [txSig, setTxSig] = useState<string | null>(null);
+
     const address = publicKey?.toBase58() || mockPassportData.walletAddress;
+
+    useEffect(() => {
+        if (connected && publicKey) {
+            getSolBalance(connection, publicKey).then(setBalance);
+        } else {
+            setBalance(null);
+        }
+    }, [connected, publicKey, connection]);
 
     const copyAddr = () => {
         navigator.clipboard.writeText(address);
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
+    };
+
+    const handleSendTest = async () => {
+        if (!publicKey || !sendTransaction) return;
+        
+        setLoading(true);
+        setTxSig(null);
+        
+        try {
+            const signature = await sendTestTransaction(connection, publicKey, sendTransaction);
+            setTxSig(signature);
+            // Refresh balance
+            const newBalance = await getSolBalance(connection, publicKey);
+            setBalance(newBalance);
+            
+            toast({
+                title: "Transaction Successful",
+                description: "0.001 SOL sent back to your wallet as a test.",
+            });
+        } catch (error) {
+            toast({
+                title: "Transaction Failed",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+                variant: "destructive"
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -53,11 +97,12 @@ export default function WalletProfileCard() {
                                 <div className="p-2.5 rounded-lg bg-primary/5 border border-primary/10">
                                     <div className="flex items-center gap-1.5 mb-1">
                                         <Shield className="w-3 h-3 text-primary" />
-                                        <span className="text-[10px] text-muted-foreground">Reputation</span>
+                                        <span className="text-[10px] text-muted-foreground">Balance</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-lg font-bold text-foreground">{mockPassportData.reputationScore}</span>
-                                        <span className="text-[10px] text-success">+15</span>
+                                        <span className="text-sm font-bold text-foreground">
+                                            {balance !== null ? `${balance.toFixed(4)} SOL` : 'Loading...'}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="p-2.5 rounded-lg bg-accent/5 border border-accent/10">
@@ -68,6 +113,32 @@ export default function WalletProfileCard() {
                                     <span className="text-lg font-bold text-foreground">{mockPassportData.totalXp}</span>
                                 </div>
                             </div>
+
+                            <button
+                                onClick={handleSendTest}
+                                disabled={loading}
+                                className="mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-primary/10 border border-primary/20 text-xs font-semibold text-primary hover:bg-primary/20 transition-all disabled:opacity-50"
+                            >
+                                {loading ? (
+                                    <><Loader2 className="w-3 h-3 animate-spin" /> Processing...</>
+                                ) : (
+                                    <><Send className="w-3 h-3" /> Send Test 0.001 SOL</>
+                                )}
+                            </button>
+
+                            {txSig && (
+                                <div className="mt-2 p-2 rounded bg-success/5 border border-success/10">
+                                    <p className="text-[9px] text-success font-medium mb-1">Last Signature:</p>
+                                    <a
+                                        href={`https://explorer.solana.com/tx/${txSig}?cluster=devnet`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[9px] text-muted-foreground hover:text-primary break-all flex items-center gap-1"
+                                    >
+                                        {txSig.slice(0, 20)}... <ExternalLink className="w-2 h-2" />
+                                    </a>
+                                </div>
+                            )}
                         </>
                     ) : (
                         <div className="mt-3">
